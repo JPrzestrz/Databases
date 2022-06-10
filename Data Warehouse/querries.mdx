@@ -1,0 +1,165 @@
+-- KPIs definition
+-- The increase in monthly revenue at level not less than 2.5% in comparison to previous month. 
+-- Value expression:
+[Measures].[Sum of spendings]
+
+-- Goal expression:
+( KPIValue( "Revenue" ), ParallelPeriod (
+[Finish Date].[Date Hierarchy].[Month], 1,
+[Finish Date].[Date Hierarchy].CurrentMember ) ) * 1.025
+
+-- Status expression:
+IIf (KPIValue( "Revenue" ) > KPIGoal("Revenue"), 1, -1)
+
+-- Trend expression:
+[ Measures ].[ sth ]
+
+-- The decrease in monthly average time of the car not being rented at leve not less than 2% in comparison to previous month.
+-- Value expression:
+[Measures].[AverageWaitTime]
+
+-- Goal expression:
+( KPIValue( "Average Wait Time" ), ParallelPeriod (
+[Start Date].[Date Hierarchy].[Month], 1,
+[Start Date].[Date Hierarchy].CurrentMember ) ) * 0.98
+
+-- Status expression:
+IIf (KPIValue( "Average Wait Time" ) < KPIGoal("Average Wait Time"), 1, -1)
+
+-- Trend expression:
+IIf (KPIValue( "Average Wait Time" ) < ( KPIValue( "Average Wait Time" ), ParallelPeriod ( 
+[Start Date].[Date Hierarchy].[Month], 1,
+[Start Date].[Date Hierarchy].CurrentMember ) ), 1, -1)
+
+
+-- MDX Queries
+-- 1 
+WITH 
+MEMBER [WaitDays] AS '[Measures].[AverageWaitTime] / 24'
+	MEMBER [Prev month wait] AS 
+'(PARALLELPERIOD([Start Date].[Date Hierarchy].[Month]
+	, 1, [Start Date].[Date Hierarchy].CurrentMember),
+[Measures].[WaitDays])'
+SELECT 
+	{[Measures].[WaitDays],[Prev month wait]} ON COLUMNS,
+	NON EMPTY [Start Date].[Date Hierarchy].&[2022].&[January] ON Rows
+FROM [CarsharingDWarehouse];
+
+-- 2
+WITH 
+	MEMBER [Prev month wait] AS 
+'(PARALLELPERIOD([Start Date].[Date Hierarchy].[Month]
+	, 1, [Start Date].[Date Hierarchy].CurrentMember), [Measures].[Rent Count])'
+SELECT
+	NON EMPTY CrossJoin([Start Date].[Date Hierarchy].&[2024].&[December],
+[Rental Place].[City].MEMBERS,[Report].[Client Category].[New]) ON ROWS,
+	NON EMPTY {[Measures].[Rent Count],[Prev month wait]} ON COLUMNS
+FROM [CarsharingDWarehouse];
+
+-- 3 
+WITH 
+	MEMBER [Prev month spent] AS 
+	'(PARALLELPERIOD([Start Date].[Date Hierarchy].[Month]
+	, 1, [Start Date].[Date Hierarchy].CurrentMember), 
+	[Measures].[Sum of spendings])'
+SELECT
+	NON EMPTY CrossJoin([Start Date].[Date Hierarchy].&[2050].&[April],
+	[Customer].[Age Category].Members) ON ROWS,
+	NON EMPTY {[Measures].[Sum of spendings],
+[Prev month spent]} ON COLUMNS
+FROM [CarsharingDWarehouse]
+WHERE [Car].[Power Category].[between 0 and 90];
+
+-- 4 
+WITH 
+	MEMBER [Prev month delay] AS 
+'(PARALLELPERIOD([Issue Date].[Date Hierarchy].[Month]
+	, 1, [Issue Date].[Date Hierarchy].CurrentMember), [Measures].[Sum delay])'
+SELECT
+	NON EMPTY CrossJoin([Issue Date].[Date Hierarchy].&[2040].&[March],
+[Junk].[Length Category].Members) ON ROWS,
+	NON EMPTY {[Measures].[Sum delay],[Prev month delay]} ON COLUMNS
+FROM [CarsharingDWarehouse];
+
+-- 5 
+WITH 
+	MEMBER [Prev year spent] AS 
+'(PARALLELPERIOD([Issue Date].[Date Hierarchy].[Year]
+	, 1, [Issue Date].[Date Hierarchy].CurrentMember), [Measures].[Money spent])'
+SELECT
+	NON EMPTY CrossJoin([Issue Date].[Date Hierarchy].&[2030],
+[Issue Date].[Season].Members) ON ROWS,
+	NON EMPTY {[Measures].[Money spent],[Prev year spent]} ON COLUMNS
+FROM [CarsharingDWarehouse]
+WHERE [Payment Category].[lacquering];
+
+-- 6 
+WITH 
+	MEMBER [Prev year spent] AS 
+'(PARALLELPERIOD([Issue Date].[Date Hierarchy].[Year]
+	, 1, [Issue Date].[Date Hierarchy].CurrentMember), [Measures].[Money spent])'
+SELECT
+	NON EMPTY CrossJoin([Issue Date].[Date Hierarchy].&[2045],
+[Car].[Power Category].Members) ON ROWS,
+	NON EMPTY {[Measures].[Money spent],[Prev year spent]} ON COLUMNS
+FROM [CarsharingDWarehouse]
+WHERE [Payment Category].[clutch repair];
+
+-- 7 
+WITH 
+	MEMBER [Prev year spent] AS 
+'(PARALLELPERIOD([Issue Date].[Date Hierarchy].[Year]
+	, 1, [Issue Date].[Date Hierarchy].CurrentMember), [Measures].[Money spent])'
+SELECT
+	NON EMPTY CrossJoin([Issue Date].[Date Hierarchy].&[2060],
+[Car].[Type Of Drive].Members) ON ROWS,
+	NON EMPTY {[Measures].[Money spent],[Prev year spent]} ON COLUMNS
+FROM [CarsharingDWarehouse]
+WHERE [Payment Category].[repair];
+
+-- 8 
+WITH 
+	MEMBER [Prev year freq] AS
+ 	'(PARALLELPERIOD([Start Date].[Date Hierarchy].[Year], 1, [Start Date].[Date Hierarchy].CurrentMember), 
+ 	[Measures].[Number of rents])'
+SELECT
+	NON EMPTY CrossJoin([Start Date].[Date Hierarchy].&[2023],
+	[Car].[Type Of Drive].Members) ON ROWS,
+	NON EMPTY {[Measures].[Number of rents],[Prev year freq]} ON COLUMNS
+FROM [CarsharingDWarehouse]
+WHERE [Report].[Type].[collision];
+
+-- 9 
+WITH 
+	MEMBER [Prev year freq] AS 
+	'(PARALLELPERIOD([Start Date].[Date Hierarchy].[Year], 1, [Start Date].[Date Hierarchy].CurrentMember), 
+	[Measures].[Number of rents])'
+SELECT
+	NON EMPTY CrossJoin([Start Date].[Date Hierarchy].[Year],
+	[Car].[Power Category].Members) ON ROWS,
+	NON EMPTY {[Measures].[Number of rents],[Prev year freq]} ON COLUMNS
+FROM [CarsharingDWarehouse]
+WHERE [Report].[Type].[collision];
+
+-- 10 
+WITH 
+	MEMBER [Prev month freq] AS '(PARALLELPERIOD(
+	[Start Date].[Date Hierarchy].[Month]
+	, 1, [Start Date].[Date Hierarchy].CurrentMember), [Measures].[Number of rents])'
+SELECT
+	NON EMPTY CrossJoin([Start Date].[Date Hierarchy].&[2060].&[June],
+	[Rental Place].[District].Members) ON ROWS,
+	NON EMPTY {[Measures].[Number of rents],[Prev month freq]} ON COLUMNS
+FROM [CarsharingDWarehouse];
+
+-- 11 
+WITH 
+	MEMBER [Tricity] AS
+	SUM({[Rental Place].[City].&[Gdansk],[Rental Place].[City].&[Gdynia]},
+	[Measures].[Rent Duration])
+SELECT 
+	{[Tricity]} ON COLUMNS,
+	{TOPCOUNT([Customer].[Age Category].members,4,
+	[Tricity])} ON ROWS
+FROM [CarsharingDWarehouse];
+

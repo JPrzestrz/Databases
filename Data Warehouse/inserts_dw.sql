@@ -1,0 +1,12 @@
+--bulk insert dbo.payment_category from 'C:\Users\kprze\OneDrive\Pulpit\~coding\Small-statistics\Data Warehouses\Data Warehouse\bulks\pay_cat.bulk' with (fieldterminator=';');
+--bulk insert dbo.junk from 'C:\Users\kprze\OneDrive\Pulpit\~coding\Small-statistics\Data Warehouses\Data Warehouse\bulks\junk.bulk' with (fieldterminator=';');
+--bulk insert dbo.date from 'C:\Users\kprze\OneDrive\Pulpit\~coding\Small-statistics\Data Warehouses\Data Warehouse\bulks\date.bulk' with (fieldterminator=';');
+--bulk insert dbo.rental_place from 'C:\Users\kprze\OneDrive\Pulpit\~coding\Small-statistics\Data Warehouses\Data Warehouse\bulks\place.bulk' with (fieldterminator=';');
+--bulk insert dbo.customer from 'C:\Users\kprze\OneDrive\Pulpit\~coding\Small-statistics\Data Warehouses\Data Warehouse\bulks\customer.bulk' with (fieldterminator=';');
+--bulk insert dbo.report from 'C:\Users\kprze\OneDrive\Pulpit\~coding\Small-statistics\Data Warehouses\Data Warehouse\bulks\report.bulk' with (fieldterminator=';');
+--bulk insert dbo.employee from 'C:\Users\kprze\OneDrive\Pulpit\~coding\Small-statistics\Data Warehouses\Data Warehouse\bulks\employee.bulk' with (fieldterminator=';');
+--bulk insert dbo.car from 'C:\Users\kprze\OneDrive\Pulpit\~coding\Small-statistics\Data Warehouses\Data Warehouse\bulks\car.bulk' with (fieldterminator=';');
+--bulk insert dbo.time from 'C:\Users\kprze\OneDrive\Pulpit\~coding\Small-statistics\Data Warehouses\Data Warehouse\bulks\time.bulk' with (fieldterminator=';');
+bulk insert dbo.task from 'C:\Users\kprze\OneDrive\Pulpit\~coding\Small-statistics\Data Warehouses\Data Warehouse\bulks\task.bulk' with (fieldterminator=';');
+bulk insert dbo.rent from 'C:\Users\kprze\OneDrive\Pulpit\~coding\Small-statistics\Data Warehouses\Data Warehouse\bulks\payment.bulk' with (fieldterminator=';');
+bulk insert dbo.payment from 'C:\Users\kprze\OneDrive\Pulpit\~coding\Small-statistics\Data Warehouses\Data Warehouse\bulks\rent.bulk' with (fieldterminator=';');
